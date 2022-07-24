@@ -1,0 +1,6 @@
+---
+- include: mysql_deb.yml
+  when: ansible_facts['os_family'] == "Debian"
+- include: mysql_dnf.yml
+  when: ansible_facts['os_family'] == "RedHat"
+...

@@ -1,0 +1,64 @@
+- name: Install MySQL Packages
+  become: true
+  ansible.builtin.apt: 
+    name: mysql-server
+    update_cache: yes 
+    state: latest
+
+- name: Start the MySQL service
+  service: 
+    name: mysql
+    state: started 
+    enabled: true
+
+- name: Install Python3-PIP
+  become: true
+  ansible.builtin.apt:
+    name: python3-pip
+    update_cache: yes
+    state: latest
+
+- name: Install Required pip modules
+  become: true
+  pip:
+    name: PyMySQL
+    state: latest
+    executable: pip3   
+    
+- name: Set the root password
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Remove all anonymous user accounts
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent    
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Remove the MySQL test database
+  mysql_db:
+    name: test
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Create MySQL user
+  mysql_user:
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
+    host: "{{ http_host }}"
+    priv: "{{ mysql_db }}.*:ALL"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Set up mysqld config
+  template:
+    src: "files/mysqld.cnf.j2"
+    dest: "/etc/mysql/mysql.conf.d/mysqld.cnf"
+  notify:
+  - Restart MySQL Debian

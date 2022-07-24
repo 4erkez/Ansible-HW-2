@@ -1,0 +1,11 @@
+---
+- name: Restart MySQL Debian
+  service:
+    name: mysql
+    state: restarted
+
+- name: Restart MySQL RedHat
+  service:
+    name: mysqld
+    state: restarted
+...
