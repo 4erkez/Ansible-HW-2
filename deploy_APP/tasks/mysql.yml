@@ -1,0 +1,12 @@
+- name: Copy script.sql file to database host
+  ansible.builtin.template:
+    src: "files/script.sql"
+    dest: "/tmp"
+  
+- name: Import script.sql file / Create database and table 
+  community.mysql.mysql_db:
+    state: import
+    name: all
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    target: /tmp/script.sql

@@ -1,5 +1,5 @@
 [LAMP]
-app ansible_host=116.203.152.14
+app ansible_host=88.99.225.5
 
 [DATABASE]
-db ansible_host=49.12.225.118
+db ansible_host=49.12.197.177

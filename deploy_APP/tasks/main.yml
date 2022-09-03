@@ -1,0 +1,6 @@
+---
+- include: app.yml
+  when: inventory_hostname == "app"
+- include: mysql.yml
+  when: inventory_hostname == "db"
+...

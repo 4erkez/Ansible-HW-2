@@ -1,0 +1,34 @@
+- name: Install unzip
+  become: true
+  ansible.builtin.apt: 
+    name: unzip
+    update_cache: yes
+    state: latest
+  
+- name: Create document root
+  ansible.builtin.file:
+    path: "/var/www/{{ http_host }}"
+    state: directory
+
+- name: Clone php-mysql-crud repository
+  ansible.builtin.git:
+    repo: https://github.com/FaztWeb/php-mysql-crud.git
+    dest: "/var/www/{{ http_host }}"
+
+- name: Set up DB config
+  ansible.builtin.template:
+    src: "files/db.php.j2"
+    dest: "/var/www/{{ http_host }}/db.php"
+
+- name: Set up Apache VirtualHost
+  ansible.builtin.template:
+    src: "files/apache.conf.j2"
+    dest: "/etc/apache2/sites-available/{{ http_conf }}"
+
+- name: Enable new site
+  ansible.builtin.shell: /usr/sbin/a2ensite {{ http_conf }}
+
+- name: Disable default Apache site
+  ansible.builtin.shell: /usr/sbin/a2dissite 000-default.conf
+  notify:
+  - Restart Apache Debian
